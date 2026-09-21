@@ -50,12 +50,4 @@ function Spawner.slot_limit(config, spawned_count, negative_count)
   return math.max(1, spawned_count or 0) + (negative_count or 0)
 end
 
-function Spawner.slot_consuming(plan)
-  local count = 0
-  for _, card in ipairs(plan) do
-    if card.edition ~= "e_negative" then count = count + 1 end
-  end
-  return count
-end
-
 return Spawner

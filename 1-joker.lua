@@ -64,7 +64,7 @@ local function spawn(plan, delay)
       for _, card in ipairs(plan) do
         SMODS.add_card({ set = "Joker", key = card.key, edition = card.edition, immediate = true })
       end
-      G.GAME.onejoker_spawned = (G.GAME.onejoker_spawned or 0) + Spawner.slot_consuming(plan)
+      G.GAME.onejoker_spawned = (G.GAME.onejoker_spawned or 0) + #plan
       apply_slot_cap()
       return true
     end,

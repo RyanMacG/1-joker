@@ -20,7 +20,7 @@ choosing every ante, optionally with a forced edition and a hand-picked set of s
 | Copies | 1–5 copies per spawn. |
 | Cadence | Every ante, or every N antes, anchored on ante 1. |
 | Spawn on ante 1 | Whether the run starts with the first spawn already in hand. |
-| Slots = spawns | Caps the run's Joker slots at the number of slot-consuming Jokers this mod has spawned, so the only Jokers you can hold are the ones it gave you. |
+| Slots = spawns | Caps the run's Joker slots at the number of Jokers this mod has spawned, so the only Jokers you can hold are the ones it gave you. |
 | Start 1–3 | Extra Jokers (each with its own edition) added at run start — your synergy picks. |
 
 Joker buttons open the card collection grid: click a Joker to pick it, or page through with the
@@ -36,9 +36,9 @@ after the ante 1 spawn, two after ante 2, and so on, plus one per starting Joker
 vouchers get clawed back on the next spawn. Turn it off to play with vanilla slots. The count lives
 on the run (`G.GAME.onejoker_spawned`), so it survives saves.
 
-Negative Jokers are left out of the cap and behave as they normally would: they do not raise the
-spawn count, and every Negative Joker you hold — spawned or bought — adds its slot back on top of
-the cap.
+Negative Jokers keep their own slot on top of the cap: the spawn earns a slot like any other, and
+every Negative Joker you hold — spawned or bought — adds one more. So a Negative spawn is worth two
+slots and occupies neither, while a plain spawn is worth one and fills it.
 
 ## Development
 
