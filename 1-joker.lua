@@ -7,8 +7,8 @@ local EDITION_LABELS = {
   e_foil = "Foil",
   e_holo = "Holo",
   e_polychrome = "Poly",
-  e_negative = "Negative",
-  random = "Random",
+  e_negative = "Neg",
+  random = "Rand",
 }
 
 local function installed_joker_keys()
@@ -181,8 +181,12 @@ local function button(label, func, ref_table, opts)
   }
 end
 
-local function label_text(text, scale)
-  return { n = G.UIT.T, config = { text = text, scale = scale or 0.4, colour = G.C.UI.TEXT_LIGHT } }
+local function label_col(text, minw, scale)
+  return {
+    n = G.UIT.C,
+    config = { align = "cr", minw = minw or 1.1, padding = 0.03 },
+    nodes = { { n = G.UIT.T, config = { text = text, scale = scale or 0.32, colour = G.C.UI.TEXT_LIGHT } } },
+  }
 end
 
 local function index_of_key(list, key)
@@ -196,8 +200,8 @@ local function edition_cycle(current, slot)
   local options = {}
   for i, key in ipairs(Config.EDITIONS) do options[i] = EDITION_LABELS[key] end
   return create_option_cycle({
-    scale = 0.7,
-    w = 2.6,
+    scale = 0.5,
+    w = 1.8,
     options = options,
     current_option = index_of_key(Config.EDITIONS, current),
     opt_callback = "onejoker_pick_edition",
@@ -212,9 +216,9 @@ local function joker_row(slot)
   local target = joker_of(slot)
   local name = Config.truncate(joker_label(target.joker), 14)
   return row({
-    label_text(slot and ("Start " .. slot) or "Joker", 0.4),
-    button(name, "onejoker_open_picker", { slot = slot }, { minw = 3.4 }),
-    button("X", "onejoker_clear_joker", { slot = slot }, { minw = 0.5, colour = G.C.RED }),
+    label_col(slot and ("Start " .. slot) or "Joker", 1.1),
+    button(name, "onejoker_open_picker", { slot = slot }, { minw = 2.5, scale = 0.32 }),
+    button("X", "onejoker_clear_joker", { slot = slot }, { minw = 0.4, scale = 0.32, colour = G.C.RED }),
     edition_cycle(target.edition, slot),
   })
 end
@@ -226,15 +230,15 @@ mod.config_tab = function()
   for i = 1, Config.MAX_COPIES do copies[i] = tostring(i) end
 
   local cadence = { "Every ante" }
-  for i = 2, Config.MAX_CADENCE do cadence[i] = "Every " .. i .. " antes" end
+  for i = 2, Config.MAX_CADENCE do cadence[i] = i .. " antes" end
 
   local nodes = {
     row({ create_toggle({ label = "Spawn every ante", ref_table = cfg, ref_value = "enabled" }) }),
     joker_row(nil),
     row({
       create_option_cycle({
-        scale = 0.7,
-        w = 3.4,
+        scale = 0.5,
+        w = 2.6,
         options = cadence,
         current_option = cfg.every_n_antes,
         opt_callback = "onejoker_pick_cadence",
@@ -242,10 +246,10 @@ mod.config_tab = function()
         no_pips = true,
         focus_args = { nav = "wide" },
       }),
-      label_text("Copies", 0.4),
+      label_col("Copies", 1.0),
       create_option_cycle({
-        scale = 0.7,
-        w = 2.0,
+        scale = 0.5,
+        w = 1.2,
         options = copies,
         current_option = cfg.copies,
         opt_callback = "onejoker_pick_copies",
@@ -258,7 +262,7 @@ mod.config_tab = function()
       create_toggle({ label = "Spawn on ante 1", ref_table = cfg, ref_value = "spawn_on_run_start" }),
       create_toggle({ label = "Slots = spawns", ref_table = cfg, ref_value = "cap_slots" }),
     }),
-    row({ label_text("Starting jokers", 0.45) }),
+    row({ label_col("Starting jokers", 3.0, 0.4) }),
   }
 
   for slot = 1, Config.STARTING_SLOTS do
