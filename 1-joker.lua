@@ -103,23 +103,28 @@ end
 
 G.FUNCS.onejoker_open_picker = function(e)
   local slot = e.config.ref_table and e.config.ref_table.slot
-  G.FUNCS.overlay_menu({
-    definition = SMODS.card_collection_UIBox(G.P_CENTER_POOLS.Joker, { 5, 5, 5 }, {
-      h_mod = 0.95,
-      no_materialize = true,
-      snap_back = true,
-      modify_card = function(card, center)
-        card.states.click.can = true
-        card.click = function(self)
-          play_sound("button", 1, 0.3)
-          self:juice_up(0.2, 0.1)
-          Config.assign_joker(config(), slot, center.key)
-          save()
-          back_to_config(self)
-        end
-      end,
-    }),
+  -- SMODS.collection_pool only keeps centers belonging to G.ACTIVE_MOD_UI, which
+  -- would leave this grid empty; drop it for the build and put it straight back.
+  local active_mod_ui = G.ACTIVE_MOD_UI
+  G.ACTIVE_MOD_UI = nil
+  local definition = SMODS.card_collection_UIBox(G.P_CENTER_POOLS.Joker, { 5, 5, 5 }, {
+    h_mod = 0.95,
+    no_materialize = true,
+    snap_back = true,
+    back_func = "openModUI_" .. mod.id,
+    modify_card = function(card, center)
+      card.states.click.can = true
+      card.click = function(self)
+        play_sound("button", 1, 0.3)
+        self:juice_up(0.2, 0.1)
+        Config.assign_joker(config(), slot, center.key)
+        save()
+        back_to_config(self)
+      end
+    end,
   })
+  G.ACTIVE_MOD_UI = active_mod_ui
+  G.FUNCS.overlay_menu({ definition = definition })
 end
 
 G.FUNCS.onejoker_clear_joker = function(e)
