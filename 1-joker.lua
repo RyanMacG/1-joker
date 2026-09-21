@@ -101,61 +101,12 @@ local function back_to_config(e)
   if back then back(e) else G.FUNCS.exit_overlay_menu() end
 end
 
-G.FUNCS.onejoker_open_picker = function(e)
-  local slot = e.config.ref_table and e.config.ref_table.slot
-  -- SMODS.collection_pool only keeps centers belonging to G.ACTIVE_MOD_UI, which
-  -- would leave this grid empty; drop it for the build and put it straight back.
-  local active_mod_ui = G.ACTIVE_MOD_UI
-  G.ACTIVE_MOD_UI = nil
-  local definition = SMODS.card_collection_UIBox(G.P_CENTER_POOLS.Joker, { 5, 5, 5 }, {
-    h_mod = 0.95,
-    no_materialize = true,
-    snap_back = true,
-    back_func = "openModUI_" .. mod.id,
-    modify_card = function(card, center)
-      card.states.click.can = true
-      card.click = function(self)
-        play_sound("button", 1, 0.3)
-        self:juice_up(0.2, 0.1)
-        Config.assign_joker(config(), slot, center.key)
-        save()
-        back_to_config(self)
-      end
-    end,
-  })
-  G.ACTIVE_MOD_UI = active_mod_ui
-  G.FUNCS.overlay_menu({ definition = definition })
+local function row(nodes, minw)
+  return { n = G.UIT.R, config = { align = "cm", padding = 0.03, minw = minw or 6.2 }, nodes = nodes }
 end
 
-G.FUNCS.onejoker_clear_joker = function(e)
-  Config.assign_joker(config(), e.config.ref_table and e.config.ref_table.slot, Config.NONE)
-  save()
-  back_to_config(e)
-end
-
-G.FUNCS.onejoker_pick_edition = function(args)
-  local slot = args.cycle_config.slot
-  local edition = Config.EDITIONS[args.cycle_config.current_option]
-  if slot then
-    mod.config.starting_jokers[slot].edition = edition
-  else
-    mod.config.edition = edition
-  end
-  save()
-end
-
-G.FUNCS.onejoker_pick_copies = function(args)
-  mod.config.copies = args.cycle_config.current_option
-  save()
-end
-
-G.FUNCS.onejoker_pick_cadence = function(args)
-  mod.config.every_n_antes = args.cycle_config.current_option
-  save()
-end
-
-local function row(nodes, align)
-  return { n = G.UIT.R, config = { align = align or "cm", padding = 0.05 }, nodes = nodes }
+local function cell(minw, nodes, align)
+  return { n = G.UIT.C, config = { align = align or "cm", minw = minw, padding = 0.02 }, nodes = nodes }
 end
 
 local function button(label, func, ref_table, opts)
@@ -196,30 +147,100 @@ local function index_of_key(list, key)
   return 1
 end
 
-local function edition_cycle(current, slot)
-  local options = {}
-  for i, key in ipairs(Config.EDITIONS) do options[i] = EDITION_LABELS[key] end
-  return create_option_cycle({
-    scale = 0.5,
-    w = 1.8,
-    options = options,
-    current_option = index_of_key(Config.EDITIONS, current),
-    opt_callback = "onejoker_pick_edition",
-    slot = slot,
-    colour = G.C.DARK_EDITION,
-    no_pips = true,
-    focus_args = { nav = "wide" },
+local edition_display = {}
+
+local function edition_key(slot)
+  return slot and ("slot" .. slot) or "main"
+end
+
+local function edition_button(current, slot)
+  local key = edition_key(slot)
+  edition_display[key] = EDITION_LABELS[current]
+  return {
+    n = G.UIT.C,
+    config = {
+      align = "cm",
+      padding = 0.08,
+      r = 0.1,
+      minw = 1.5,
+      minh = 0.6,
+      colour = G.C.DARK_EDITION,
+      button = "onejoker_cycle_edition",
+      ref_table = { slot = slot },
+      shadow = true,
+      hover = true,
+      focus_args = { nav = "wide" },
+    },
+    nodes = {
+      { n = G.UIT.T, config = { ref_table = edition_display, ref_value = key, scale = 0.32, colour = G.C.UI.TEXT_LIGHT } },
+    },
+  }
+end
+
+G.FUNCS.onejoker_open_picker = function(e)
+  local slot = e.config.ref_table and e.config.ref_table.slot
+  -- SMODS.collection_pool only keeps centers belonging to G.ACTIVE_MOD_UI, which
+  -- would leave this grid empty; drop it for the build and put it straight back.
+  local active_mod_ui = G.ACTIVE_MOD_UI
+  G.ACTIVE_MOD_UI = nil
+  local definition = SMODS.card_collection_UIBox(G.P_CENTER_POOLS.Joker, { 5, 5, 5 }, {
+    h_mod = 0.95,
+    no_materialize = true,
+    snap_back = true,
+    back_func = "openModUI_" .. mod.id,
+    modify_card = function(card, center)
+      card.states.click.can = true
+      card.click = function(self)
+        play_sound("button", 1, 0.3)
+        self:juice_up(0.2, 0.1)
+        Config.assign_joker(config(), slot, center.key)
+        save()
+        back_to_config(self)
+      end
+    end,
   })
+  G.ACTIVE_MOD_UI = active_mod_ui
+  G.FUNCS.overlay_menu({ definition = definition })
+end
+
+G.FUNCS.onejoker_clear_joker = function(e)
+  Config.assign_joker(config(), e.config.ref_table and e.config.ref_table.slot, Config.NONE)
+  save()
+  back_to_config(e)
+end
+
+G.FUNCS.onejoker_cycle_edition = function(e)
+  local slot = e.config.ref_table.slot
+  local cfg = config()
+  local current = slot and cfg.starting_jokers[slot].edition or cfg.edition
+  local edition = Config.EDITIONS[(index_of_key(Config.EDITIONS, current) % #Config.EDITIONS) + 1]
+  if slot then
+    cfg.starting_jokers[slot].edition = edition
+  else
+    cfg.edition = edition
+  end
+  edition_display[edition_key(slot)] = EDITION_LABELS[edition]
+  save()
+end
+
+G.FUNCS.onejoker_pick_copies = function(args)
+  mod.config.copies = args.cycle_config.current_option
+  save()
+end
+
+G.FUNCS.onejoker_pick_cadence = function(args)
+  mod.config.every_n_antes = args.cycle_config.current_option
+  save()
 end
 
 local function joker_row(slot)
   local target = joker_of(slot)
   local name = Config.truncate(joker_label(target.joker), 14)
   return row({
-    label_col(slot and ("Start " .. slot) or "Joker", 1.1),
-    button(name, "onejoker_open_picker", { slot = slot }, { minw = 2.5, scale = 0.32 }),
-    button("X", "onejoker_clear_joker", { slot = slot }, { minw = 0.4, scale = 0.32, colour = G.C.RED }),
-    edition_cycle(target.edition, slot),
+    label_col(slot and ("Start " .. slot) or "Joker", 1.2),
+    cell(2.6, { button(name, "onejoker_open_picker", { slot = slot }, { minw = 2.5, scale = 0.32 }) }),
+    cell(0.6, { button("X", "onejoker_clear_joker", { slot = slot }, { minw = 0.45, scale = 0.32, colour = G.C.RED }) }),
+    cell(1.6, { edition_button(target.edition, slot) }),
   })
 end
 

@@ -2,26 +2,15 @@ local Spawner = {}
 
 local NONE = "none"
 
-Spawner.RANDOM_EDITIONS = { "e_foil", "e_holo", "e_polychrome" }
+Spawner.RANDOM_EDITIONS = { NONE, "e_foil", "e_holo", "e_polychrome" }
 
 local function edition_for(edition, rng)
   if edition == nil or edition == NONE then return nil end
   if edition == "random" then
     rng = rng or math.random
-    function Spawner.slot_limit(config, spawned_count, negative_count)
-  if not config.cap_slots then return nil end
-  return math.max(1, spawned_count or 0) + (negative_count or 0)
-end
-
-function Spawner.slot_consuming(plan)
-  local count = 0
-  for _, card in ipairs(plan) do
-    if card.edition ~= "e_negative" then count = count + 1 end
-  end
-  return count
-end
-
-return Spawner.RANDOM_EDITIONS[rng(#Spawner.RANDOM_EDITIONS)]
+    local rolled = Spawner.RANDOM_EDITIONS[rng(#Spawner.RANDOM_EDITIONS)]
+    if rolled == NONE then return nil end
+    return rolled
   end
   return edition
 end

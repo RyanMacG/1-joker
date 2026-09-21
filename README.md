@@ -16,7 +16,7 @@ choosing every ante, optionally with a forced edition and a hand-picked set of s
 | --- | --- |
 | Spawn every ante | Master switch for the ante spawns. Starting Jokers still apply when off. |
 | Joker | The Joker that gets spawned, picked from a card grid. `X` clears it, which disables the spawn. |
-| Edition | `None`, a forced edition, or `Random` (Foil / Holographic / Polychrome, rolled per card). |
+| Edition | `None`, a forced edition, or `Rand` — rolled per card across no edition, Foil, Holo and Poly with equal odds. Press the button to cycle it. |
 | Copies | 1–5 copies per spawn. |
 | Cadence | Every ante, or every N antes, anchored on ante 1. |
 | Spawn on ante 1 | Whether the run starts with the first spawn already in hand. |

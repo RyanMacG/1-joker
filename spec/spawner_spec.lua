@@ -49,7 +49,7 @@ describe("Spawner.plan_for_ante", function()
   end)
 
   it("rolls a random edition per card", function()
-    local rolls, i = { 3, 1 }, 0
+    local rolls, i = { 3, 2 }, 0
     local rng = function(n)
       i = i + 1
       assert.are.equal(#Spawner.RANDOM_EDITIONS, n)
@@ -57,7 +57,13 @@ describe("Spawner.plan_for_ante", function()
     end
     local plan = Spawner.plan_for_ante(config({ edition = "random", copies = 2 }), 2, rng)
     assert.are.equal(Spawner.RANDOM_EDITIONS[3], plan[1].edition)
-    assert.are.equal(Spawner.RANDOM_EDITIONS[1], plan[2].edition)
+    assert.are.equal(Spawner.RANDOM_EDITIONS[2], plan[2].edition)
+  end)
+
+  it("can roll no edition at all", function()
+    assert.are.equal("none", Spawner.RANDOM_EDITIONS[1])
+    local plan = Spawner.plan_for_ante(config({ edition = "random" }), 2, function() return 1 end)
+    assert.is_nil(plan[1].edition)
   end)
 end)
 
