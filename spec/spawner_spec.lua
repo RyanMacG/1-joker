@@ -103,3 +103,28 @@ describe("Spawner.slot_limit", function()
     assert.are.equal(1, Spawner.slot_limit(config({ cap_slots = true }), 0))
   end)
 end)
+
+describe("Spawner.slot_limit with negatives", function()
+  it("adds a slot per negative joker on top of the cap", function()
+    assert.are.equal(5, Spawner.slot_limit(config({ cap_slots = true }), 3, 2))
+  end)
+
+  it("still keeps one slot when only negatives were spawned", function()
+    assert.are.equal(3, Spawner.slot_limit(config({ cap_slots = true }), 0, 2))
+  end)
+end)
+
+describe("Spawner.slot_consuming", function()
+  it("counts cards that take up a slot", function()
+    local plan = {
+      { key = "j_joker" },
+      { key = "j_joker", edition = "e_foil" },
+      { key = "j_joker", edition = "e_negative" },
+    }
+    assert.are.equal(2, Spawner.slot_consuming(plan))
+  end)
+
+  it("counts nothing for an all-negative plan", function()
+    assert.are.equal(0, Spawner.slot_consuming({ { key = "j_joker", edition = "e_negative" } }))
+  end)
+end)

@@ -42,8 +42,16 @@ local function edition_rng(n)
   return math.max(1, math.ceil(roll * n))
 end
 
+local function negative_jokers()
+  local count = 0
+  for _, card in ipairs(G.jokers and G.jokers.cards or {}) do
+    if card.edition and card.edition.negative then count = count + 1 end
+  end
+  return count
+end
+
 local function apply_slot_cap()
-  local limit = Spawner.slot_limit(config(), G.GAME.onejoker_spawned or 0)
+  local limit = Spawner.slot_limit(config(), G.GAME.onejoker_spawned or 0, negative_jokers())
   if limit and G.jokers then G.jokers.config.card_limit = limit end
 end
 
@@ -56,7 +64,7 @@ local function spawn(plan, delay)
       for _, card in ipairs(plan) do
         SMODS.add_card({ set = "Joker", key = card.key, edition = card.edition, immediate = true })
       end
-      G.GAME.onejoker_spawned = (G.GAME.onejoker_spawned or 0) + #plan
+      G.GAME.onejoker_spawned = (G.GAME.onejoker_spawned or 0) + Spawner.slot_consuming(plan)
       apply_slot_cap()
       return true
     end,
