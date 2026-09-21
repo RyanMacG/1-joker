@@ -54,7 +54,7 @@ local function spawn(plan, delay)
     delay = delay or 0.4,
     func = function()
       for _, card in ipairs(plan) do
-        SMODS.add_card({ set = "Joker", key = card.key, edition = card.edition })
+        SMODS.add_card({ set = "Joker", key = card.key, edition = card.edition, immediate = true })
       end
       G.GAME.onejoker_spawned = (G.GAME.onejoker_spawned or 0) + #plan
       apply_slot_cap()
