@@ -73,28 +73,43 @@ describe("Config.normalize", function()
   end)
 end)
 
-describe("Config.joker_options", function()
-  it("lists installed jokers by key, sorted by label", function()
-    local pool = {
-      { key = "j_blueprint" },
-      { key = "j_joker" },
-      { key = "j_brainstorm" },
-    }
-    local labels = { j_joker = "Joker", j_blueprint = "Blueprint", j_brainstorm = "Brainstorm" }
-    local opts = Config.joker_options(pool, function(key) return labels[key] end)
-
-    assert.are.equal("none", opts[1].key)
-    assert.are.same(
-      { "none", "j_blueprint", "j_brainstorm", "j_joker" },
-      { opts[1].key, opts[2].key, opts[3].key, opts[4].key }
-    )
-    assert.are.equal("Blueprint", opts[2].label)
+describe("Config.assign_joker", function()
+  it("sets the ante joker when no slot is given", function()
+    local c = Config.defaults()
+    Config.assign_joker(c, nil, "j_blueprint")
+    assert.are.equal("j_blueprint", c.joker)
   end)
 
-  it("skips jokers hidden from the shop pool", function()
-    local pool = { { key = "j_joker" }, { key = "j_secret", no_collection = true } }
-    local opts = Config.joker_options(pool, function(key) return key end)
-    assert.are.equal(2, #opts)
-    assert.are.equal("j_joker", opts[2].key)
+  it("sets a starting slot", function()
+    local c = Config.defaults()
+    Config.assign_joker(c, 2, "j_blueprint")
+    assert.are.equal("j_blueprint", c.starting_jokers[2].joker)
+    assert.are.equal("none", c.starting_jokers[1].joker)
+  end)
+
+  it("clears the edition when a slot is emptied", function()
+    local c = Config.defaults()
+    c.starting_jokers[1] = { joker = "j_blueprint", edition = "e_foil" }
+    Config.assign_joker(c, 1, "none")
+    assert.are.equal("none", c.starting_jokers[1].joker)
+    assert.are.equal("none", c.starting_jokers[1].edition)
+  end)
+
+  it("ignores slots that do not exist", function()
+    local c = Config.defaults()
+    Config.assign_joker(c, 9, "j_blueprint")
+    assert.are.equal(Config.STARTING_SLOTS, #c.starting_jokers)
+  end)
+end)
+
+describe("Config.truncate", function()
+  it("leaves short labels alone", function()
+    assert.are.equal("Blueprint", Config.truncate("Blueprint", 12))
+  end)
+
+  it("cuts long labels down to the limit, ellipsis included", function()
+    assert.are.equal("Gros Michel", Config.truncate("Gros Michel", 11))
+    assert.are.equal("Gros M..", Config.truncate("Gros Michel", 8))
+    assert.are.equal(11, #Config.truncate("The Idol Of Something", 11))
   end)
 end)

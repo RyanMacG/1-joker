@@ -15,15 +15,17 @@ choosing every ante, optionally with a forced edition and a hand-picked set of s
 | Option | Effect |
 | --- | --- |
 | Spawn every ante | Master switch for the ante spawns. Starting Jokers still apply when off. |
-| Joker | The Joker that gets spawned. `None` disables the spawn. |
+| Joker | The Joker that gets spawned, picked from a card grid. `X` clears it, which disables the spawn. |
 | Edition | `None`, a forced edition, or `Random` (Foil / Holographic / Polychrome, rolled per card). |
 | Copies | 1–5 copies per spawn. |
 | Cadence | Every ante, or every N antes, anchored on ante 1. |
 | Also spawn on ante 1 | Whether the run starts with the first spawn already in hand. |
 | Start 1–3 | Extra Jokers (each with its own edition) added at run start — your synergy picks. |
 
-Settings are stored in `config.lua`, which you can also edit directly if clicking through the
-whole Joker list is tedious. Unknown or uninstalled Joker keys fall back to sensible defaults on
+Joker buttons open the card collection grid: click a Joker to pick it, or page through with the
+shoulder buttons on a controller / Steam Deck.
+
+Settings are stored in `config.lua`, which you can also edit directly. Unknown or uninstalled Joker keys fall back to sensible defaults on
 load, so pulling a mod out of your Mods folder will not break an existing config.
 
 Spawns ignore Joker slot limits, exactly like a Negative Joker would — if you are full, the card

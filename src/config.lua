@@ -80,19 +80,22 @@ function Config.normalize(raw, valid_keys)
   return config
 end
 
-function Config.joker_options(pool, label_for)
-  local options = { { key = Config.NONE, label = label_for(Config.NONE) or "None" } }
-  for _, center in ipairs(pool or {}) do
-    if not center.no_collection then
-      options[#options + 1] = { key = center.key, label = label_for(center.key) or center.key }
-    end
+function Config.assign_joker(config, slot, key)
+  key = key or Config.NONE
+  if not slot then
+    config.joker = key
+    return config
   end
-  table.sort(options, function(a, b)
-    if a.key == Config.NONE or b.key == Config.NONE then return a.key == Config.NONE end
-    if a.label == b.label then return a.key < b.key end
-    return a.label < b.label
-  end)
-  return options
+  local target = config.starting_jokers and config.starting_jokers[slot]
+  if not target then return config end
+  target.joker = key
+  if key == Config.NONE then target.edition = Config.NONE end
+  return config
+end
+
+function Config.truncate(label, max_length)
+  if #label <= max_length then return label end
+  return label:sub(1, max_length - 2) .. ".."
 end
 
 return Config
