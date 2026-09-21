@@ -2,7 +2,7 @@ local Spawner = {}
 
 local NONE = "none"
 
-Spawner.RANDOM_EDITIONS = { NONE, "e_foil", "e_holo", "e_polychrome" }
+Spawner.RANDOM_EDITIONS = { NONE, "e_foil", "e_holo", "e_polychrome", "e_negative" }
 
 local function edition_for(edition, rng)
   if edition == nil or edition == NONE then return nil end

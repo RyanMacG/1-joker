@@ -60,6 +60,13 @@ describe("Spawner.plan_for_ante", function()
     assert.are.equal(Spawner.RANDOM_EDITIONS[2], plan[2].edition)
   end)
 
+  it("rolls across plain, the three shop editions and negative", function()
+    assert.are.same(
+      { "none", "e_foil", "e_holo", "e_polychrome", "e_negative" },
+      Spawner.RANDOM_EDITIONS
+    )
+  end)
+
   it("can roll no edition at all", function()
     assert.are.equal("none", Spawner.RANDOM_EDITIONS[1])
     local plan = Spawner.plan_for_ante(config({ edition = "random" }), 2, function() return 1 end)
