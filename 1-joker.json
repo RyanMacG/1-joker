@@ -1,0 +1,12 @@
+{
+    "id": "onejoker",
+    "name": "1 Joker",
+    "display_name": "1 Joker",
+    "author": ["RyanMacG"],
+    "description": "Spawns a Joker of your choosing every ante.",
+    "prefix": "onejoker",
+    "main_file": "1-joker.lua",
+    "priority": 0,
+    "badge_colour": "8C5DFF",
+    "version": "0.1.0"
+}
