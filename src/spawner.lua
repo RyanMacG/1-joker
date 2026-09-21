@@ -8,7 +8,12 @@ local function edition_for(edition, rng)
   if edition == nil or edition == NONE then return nil end
   if edition == "random" then
     rng = rng or math.random
-    return Spawner.RANDOM_EDITIONS[rng(#Spawner.RANDOM_EDITIONS)]
+    function Spawner.slot_limit(config, spawned_count)
+  if not config.cap_slots then return nil end
+  return math.max(1, spawned_count or 0)
+end
+
+return Spawner.RANDOM_EDITIONS[rng(#Spawner.RANDOM_EDITIONS)]
   end
   return edition
 end
@@ -41,6 +46,11 @@ function Spawner.plan_for_run_start(config, rng)
     end
   end
   return plan
+end
+
+function Spawner.slot_limit(config, spawned_count)
+  if not config.cap_slots then return nil end
+  return math.max(1, spawned_count or 0)
 end
 
 return Spawner

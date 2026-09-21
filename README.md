@@ -19,7 +19,8 @@ choosing every ante, optionally with a forced edition and a hand-picked set of s
 | Edition | `None`, a forced edition, or `Random` (Foil / Holographic / Polychrome, rolled per card). |
 | Copies | 1–5 copies per spawn. |
 | Cadence | Every ante, or every N antes, anchored on ante 1. |
-| Also spawn on ante 1 | Whether the run starts with the first spawn already in hand. |
+| Spawn on ante 1 | Whether the run starts with the first spawn already in hand. |
+| Slots = spawns | Caps the run's Joker slots at the number of Jokers this mod has spawned, so the only Jokers you can hold are the ones it gave you. |
 | Start 1–3 | Extra Jokers (each with its own edition) added at run start — your synergy picks. |
 
 Joker buttons open the card collection grid: click a Joker to pick it, or page through with the
@@ -28,8 +29,12 @@ shoulder buttons on a controller / Steam Deck.
 Settings are stored in `config.lua`, which you can also edit directly. Unknown or uninstalled Joker keys fall back to sensible defaults on
 load, so pulling a mod out of your Mods folder will not break an existing config.
 
-Spawns ignore Joker slot limits, exactly like a Negative Joker would — if you are full, the card
-is still added.
+Spawns ignore the current Joker slot limit — if you are full, the card is still added.
+
+With `Slots = spawns` on, the slot limit is rewritten to the running spawn count every time the mod
+spawns something: one slot after the ante 1 spawn, two after ante 2, and so on, plus one per
+starting Joker. Slots bought from vouchers get clawed back on the next spawn. Turn it off to play
+with vanilla slots. The count lives on the run (`G.GAME.onejoker_spawned`), so it survives saves.
 
 ## Development
 

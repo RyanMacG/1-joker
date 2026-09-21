@@ -44,6 +44,7 @@ function Config.defaults()
     copies = 1,
     every_n_antes = 1,
     spawn_on_run_start = true,
+    cap_slots = true,
     starting_jokers = starting_jokers,
   }
 end
@@ -64,6 +65,7 @@ function Config.normalize(raw, valid_keys)
   if raw.spawn_on_run_start ~= nil then
     config.spawn_on_run_start = raw.spawn_on_run_start and true or false
   end
+  if raw.cap_slots ~= nil then config.cap_slots = raw.cap_slots and true or false end
   config.joker = known_joker(raw.joker, valid_keys, defaults.joker)
   config.edition = is_edition(raw.edition) and raw.edition or defaults.edition
   config.copies = clamp_int(raw.copies, 1, Config.MAX_COPIES, defaults.copies)

@@ -42,6 +42,11 @@ local function edition_rng(n)
   return math.max(1, math.ceil(roll * n))
 end
 
+local function apply_slot_cap()
+  local limit = Spawner.slot_limit(config(), G.GAME.onejoker_spawned or 0)
+  if limit and G.jokers then G.jokers.config.card_limit = limit end
+end
+
 local function spawn(plan, delay)
   if #plan == 0 or not G.jokers then return end
   G.E_MANAGER:add_event(Event({
@@ -51,6 +56,8 @@ local function spawn(plan, delay)
       for _, card in ipairs(plan) do
         SMODS.add_card({ set = "Joker", key = card.key, edition = card.edition })
       end
+      G.GAME.onejoker_spawned = (G.GAME.onejoker_spawned or 0) + #plan
+      apply_slot_cap()
       return true
     end,
   }))
@@ -234,7 +241,10 @@ mod.config_tab = function()
         focus_args = { nav = "wide" },
       }),
     }),
-    row({ create_toggle({ label = "Also spawn on ante 1", ref_table = cfg, ref_value = "spawn_on_run_start" }) }),
+    row({
+      create_toggle({ label = "Spawn on ante 1", ref_table = cfg, ref_value = "spawn_on_run_start" }),
+      create_toggle({ label = "Slots = spawns", ref_table = cfg, ref_value = "cap_slots" }),
+    }),
     row({ label_text("Starting jokers", 0.45) }),
   }
 

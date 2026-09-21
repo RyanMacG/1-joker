@@ -89,3 +89,17 @@ describe("Spawner.plan_for_run_start", function()
     assert.are.same({ { key = "j_mime", edition = "e_foil" } }, plan)
   end)
 end)
+
+describe("Spawner.slot_limit", function()
+  it("leaves the run's limit alone when capping is off", function()
+    assert.is_nil(Spawner.slot_limit(config({ cap_slots = false }), 3))
+  end)
+
+  it("caps the limit to the number of jokers the mod has spawned", function()
+    assert.are.equal(3, Spawner.slot_limit(config({ cap_slots = true }), 3))
+  end)
+
+  it("keeps at least one slot", function()
+    assert.are.equal(1, Spawner.slot_limit(config({ cap_slots = true }), 0))
+  end)
+end)
